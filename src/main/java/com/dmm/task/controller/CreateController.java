@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class CreateController {
-	@GetMapping("/testcreate")
+	@GetMapping("/create")
 	String create() {
 		return "create";
 	}
