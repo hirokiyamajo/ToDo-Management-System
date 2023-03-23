@@ -8,7 +8,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import com.dmm.task.data.entity.Todo;
 import com.dmm.task.data.repository.TodoRepository;
@@ -70,8 +73,14 @@ public class MainController {
 		calendar.add(week);
 		
 		//8. 管理者は全員分のタスクを見えるようにする
-		
+		MultiValueMap<LocalDate, Todo> tasks = new LinkedMultiValueMap<LocalDate, Todo>();
+		model.addAttribute("tasks", tasks);
+
 		return "main";
 	}
-
+	
+	@PostMapping("/main")
+	public String redisterTodo() {
+		return "redirect:/main";
+	}
 }
