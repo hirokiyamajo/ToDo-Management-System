@@ -10,21 +10,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.dmm.task.data.entity.Todo;
 import com.dmm.task.data.repository.TodoRepository;
+import com.dmm.task.form.TodoForm;
 
 @Controller
 public class MainController {
 	@Autowired
-	private TodoRepository repo;
+	private TodoRepository todoRepository;
 	
 	@GetMapping("/main")
 	String main(Model model) {
-		List<Todo> main =  repo.findAll();
-		model.addAttribute("main", main);
 		
 		//1. 2次元表になるので、ListのListを用意
 		List<List<LocalDate>> calendar = new ArrayList<>();
@@ -74,13 +76,34 @@ public class MainController {
 		
 		//8. 管理者は全員分のタスクを見えるようにする
 		MultiValueMap<LocalDate, Todo> tasks = new LinkedMultiValueMap<LocalDate, Todo>();
-		model.addAttribute("tasks", tasks);
-
+		List<Todo> list = todoRepository.findAll();
+		model.addAttribute("main", list);
+		for(Todo t : list) {
+			tasks.add(current,t);
+		}
+	
 		return "main";
 	}
 	
+	//新規作成
 	@PostMapping("/main")
-	public String redisterTodo() {
+	public String registerTodo(@Validated TodoForm todoform, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return "newmain";
+		}
+		Todo todo = new Todo();
+		todo.setTitle(todoform.getTitle());
+		todo.setText(todoform.getText());
+		
+		todoRepository.save(todo);
+		
+		return "redirect:/main";
+	}
+	
+	//削除
+	@PostMapping("/main/delete/{id}")
+	public String deleteTodo(@PathVariable Long id) {
+		todoRepository.deleteById(id);
 		return "redirect:/main";
 	}
 }
