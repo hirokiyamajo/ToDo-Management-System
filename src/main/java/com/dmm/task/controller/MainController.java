@@ -100,6 +100,19 @@ public class MainController {
 		return "redirect:/main";
 	}
 	
+	//変更
+	@PostMapping("/main/edit/{id}")
+	public String editTodo(Model model,TodoForm todoform,@PathVariable Long id) {
+		Todo todo = new Todo();
+				
+		todoRepository.findById(id);
+		todo.setId(id);
+		todoRepository.save(todo);
+		return "redirect:/main";
+	}
+	
+	
+
 	//削除
 	@PostMapping("/main/delete/{id}")
 	public String deleteTodo(@PathVariable Long id) {
